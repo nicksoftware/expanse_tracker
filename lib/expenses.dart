@@ -1,6 +1,6 @@
 import 'package:expanse_tracker/widgets/expenses_list/expense_list.dart';
 import 'package:expanse_tracker/models/expense.dart';
-import 'package:expanse_tracker/widgets/new_expense.dart';
+import 'package:expanse_tracker/new_expense.dart';
 import 'package:flutter/material.dart';
 
 class Expenses extends StatefulWidget {
@@ -38,6 +38,32 @@ class _ExpensesState extends State<Expenses> {
     });
   }
 
+  void removeExpense(Expense expense) {
+    final expenseIndex = _registeredExpenses.indexOf(expense);
+
+    setState(() {
+      _registeredExpenses.remove(expense);
+    });
+
+    ScaffoldMessenger.of(context).clearSnackBars();
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: const Text(
+          'Expense deleted',
+        ),
+        duration: const Duration(seconds: 3),
+        action: SnackBarAction(
+            label: 'Undo',
+            onPressed: () => {
+                  setState(
+                    () => _registeredExpenses.insert(expenseIndex, expense),
+                  ),
+                }),
+      ),
+    );
+  }
+
   void _openAddExpenseOverlay() {
     showModalBottomSheet(
         context: context,
@@ -61,7 +87,10 @@ class _ExpensesState extends State<Expenses> {
         children: [
           const Text('The chart'),
           Expanded(
-            child: ExpensesList(expenses: _registeredExpenses),
+            child: ExpensesList(
+              expenses: _registeredExpenses,
+              onRemoveExpense: removeExpense,
+            ),
           )
         ],
       ),
