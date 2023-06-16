@@ -68,6 +68,7 @@ class _ExpensesState extends State<Expenses> {
   void _openAddExpenseOverlay() {
     showModalBottomSheet(
         context: context,
+        useSafeArea: true,
         isScrollControlled: true,
         builder: (ctx) => NewExpense(
               onSave: saveExpense,
@@ -76,15 +77,28 @@ class _ExpensesState extends State<Expenses> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Expense Tracker'),
-        actions: [
-          IconButton(
-              onPressed: _openAddExpenseOverlay, icon: const Icon(Icons.add))
+    var deviceHeight = MediaQuery.of(context).size.height;
+    var deviceWidth = MediaQuery.of(context).size.width;
+    Widget content;
+
+    if (deviceWidth > deviceHeight) {
+      content = Row(
+        children: [
+          Expanded(
+            flex: 2,
+            child: Chart(expenses: _registeredExpenses),
+          ),
+          Expanded(
+            flex: 3,
+            child: ExpensesList(
+              expenses: _registeredExpenses,
+              onRemoveExpense: removeExpense,
+            ),
+          )
         ],
-      ),
-      body: Column(
+      );
+    } else {
+      content = Column(
         children: [
           Chart(expenses: _registeredExpenses),
           Expanded(
@@ -94,7 +108,18 @@ class _ExpensesState extends State<Expenses> {
             ),
           )
         ],
+      );
+    }
+
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Expense Tracker'),
+        actions: [
+          IconButton(
+              onPressed: _openAddExpenseOverlay, icon: const Icon(Icons.add))
+        ],
       ),
+      body: content,
     );
   }
 }
