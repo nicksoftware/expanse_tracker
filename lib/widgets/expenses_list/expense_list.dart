@@ -14,7 +14,7 @@ class ExpensesList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Widget mainContent = Center(
+    Widget mainContent = const Center(
       child: Text('No expenses found, start adding some!'),
     );
 
@@ -22,6 +22,14 @@ class ExpensesList extends StatelessWidget {
       mainContent = ListView.builder(
         itemCount: expenses.length,
         itemBuilder: (ctx, index) => Dismissible(
+          background: Container(
+            decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.error.withOpacity(0.5),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            margin: EdgeInsets.symmetric(
+                horizontal: Theme.of(context).cardTheme.margin!.horizontal),
+          ),
           key: ValueKey(expenses[index]),
           child: ExpenseItem(expenses[index]),
           onDismissed: (direction) {
